@@ -98,7 +98,16 @@ a{color:inherit;text-decoration:none}
 /* ===== hero ===== */
 .hero{position:relative;height:100vh;height:100svh;min-height:640px;max-height:980px;color:#fff;overflow:hidden;background:#3a2a22}
 .pics{position:absolute;inset:0}
-#vid{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#1d130e}
+#front{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 55%;transform-origin:50% 60%;will-change:transform,filter}
+.scene{position:absolute;inset:0;opacity:0;overflow:hidden;background:#1d130e}
+.scene img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;will-change:transform,filter}
+#inside img{filter:blur(7px) brightness(.72) saturate(1.15);transform:scale(1.35)}
+#muse img{object-position:50% 38%;transform-origin:50% 40%}
+.panels{position:absolute;inset:0;z-index:1;pointer-events:none;perspective:1200px}
+.pan{position:absolute;left:50%;top:50%;margin:0;width:min(26vh,22vw);aspect-ratio:472/1024;opacity:0;transform-origin:50% 50%;will-change:transform,opacity}
+.pan img{width:100%;height:100%;object-fit:cover;border-radius:999px 999px 4px 4px;box-shadow:0 30px 60px rgba(0,0,0,.45),0 0 0 3px rgba(201,164,101,.85)}
+.pan figcaption{position:absolute;left:50%;bottom:-34px;transform:translateX(-50%);white-space:nowrap;color:#fff;font:italic 400 18px var(--serif);text-shadow:0 2px 12px rgba(0,0,0,.6)}
+.bloom{position:absolute;inset:0;z-index:2;pointer-events:none;opacity:0;background:radial-gradient(ellipse 45% 55% at 50% 58%,#fff6e4 0%,rgba(255,226,170,.85) 35%,rgba(255,210,140,0) 75%)}
 .slide{position:absolute;inset:0;opacity:0;transition:opacity 1.6s ease}
 .slide.on{opacity:1}
 .slide img{width:100%;height:100%;object-fit:cover;object-position:var(--pos,70% 30%)}
@@ -405,9 +414,16 @@ a{color:inherit;text-decoration:none}
 
 <main id="main">
 <section class="hero" id="top" aria-label="The Heritage Edit">
-  <div class="pics" id="pics">
-    <video id="vid" muted playsinline preload="auto" poster="https://d8j0ntlcm91z4.cloudfront.net/user_38bqzJSbXkoZYkZRDiRAYYm3goL/hf_20261009_111947_2fe2724e-412e-4200-b859-f1ac9e107444.png" src="https://d8j0ntlcm91z4.cloudfront.net/user_38bqzJSbXkoZYkZRDiRAYYm3goL/hf_20261009_112715_e9ebec74-21ed-43a6-b24c-60f6f0cbaa73.mp4" aria-label="Walking into the VASRÉ saree showroom"></video>
+  <div class="pics" id="pics"><img id="front" data-ext="https://d8j0ntlcm91z4.cloudfront.net/user_38bqzJSbXkoZYkZRDiRAYYm3goL/hf_20261009_111947_2fe2724e-412e-4200-b859-f1ac9e107444.png" data-fb="campaign" alt="The VASRÉ saree showroom, seen from the street"></div>
+  <div class="scene" id="inside"><img data-ext="https://d8j0ntlcm91z4.cloudfront.net/user_38bqzJSbXkoZYkZRDiRAYYm3goL/hf_20261009_111948_2ded17e8-79e2-4340-bd1d-ae4bd27929b5.png" data-fb="sagecampaign" alt=""></div>
+  <div class="panels" id="panels" aria-hidden="true">
+    <figure class="pan" data-side="-1"><img data-img="burgundy" alt=""><figcaption>Banarasi silk</figcaption></figure>
+    <figure class="pan" data-side="1"><img data-img="sage" alt=""><figcaption>Kanjivaram silk</figcaption></figure>
+    <figure class="pan" data-side="-1"><img data-img="rose" alt=""><figcaption>Organza</figcaption></figure>
+    <figure class="pan" data-side="1"><img data-img="ivory" alt=""><figcaption>Bridal tissue</figcaption></figure>
   </div>
+  <div class="scene" id="muse"><img data-ext="https://d8j0ntlcm91z4.cloudfront.net/user_38bqzJSbXkoZYkZRDiRAYYm3goL/hf_20261009_111947_f4398b45-c6fa-4077-ad18-7c4975815e11.png" data-fb="campaign" alt="Our stylist at her table, showing sarees"></div>
+  <div class="bloom" id="bloom"></div>
   <div class="shade" id="shade"></div>
   <div class="vign" id="vign"></div>
   <div class="stepcap" id="stepcap"><div class="eyebrow">Welcome to the house of VASRÉ</div><h2>Step inside, <em>slowly.</em></h2></div>
@@ -687,52 +703,53 @@ if(G){
   if(window.Lenis){lenis=new Lenis({lerp:.085});lenis.on('scroll',ScrollTrigger.update);gsap.ticker.add(t=>lenis.raf(t*1000));gsap.ticker.lagSmoothing(0);document.documentElement.style.scrollBehavior='auto';
     $$('a[href^="#"]').forEach(a=>a.addEventListener('click',e=>{const t=$(a.getAttribute('href'));if(!t)return;e.preventDefault();lenis.scrollTo(t,{offset:-70,duration:1.6})}))}
 
-  /* One scroll = walk into the showroom and meet the stylist */
-  const vid=$('#vid'),hero=$('#top');
-  const WALK_SECONDS=4.2;            // how long the walk takes on screen
-  let state='idle';                  // idle -> walking -> arrived
-  heroEnd=hero.offsetHeight;
-  addEventListener('resize',()=>{heroEnd=hero.offsetHeight});
+  /* One scroll = walk into the showroom and meet the stylist (photos + animation, no video) */
+  $$('img[data-ext]').forEach(i=>{i.onerror=()=>{i.onerror=null;i.src=IMG[i.dataset.fb]};i.src=i.dataset.ext});
+  const hero=$('#top');let state='idle';
+  heroEnd=hero.offsetHeight;addEventListener('resize',()=>{heroEnd=hero.offsetHeight});
   const lock=()=>{lenis&&lenis.stop();document.documentElement.style.overflow='hidden'};
   const unlock=()=>{lenis&&lenis.start();document.documentElement.style.overflow=''};
-  function showMeet(){
-    state='arrived';
-    gsap.to('#vign',{opacity:.55,duration:.8});
-    gsap.fromTo('#meet .l',{opacity:0,x:-40},{opacity:1,x:0,duration:.9,ease:'expo.out'});
-    gsap.fromTo('#meet .r',{opacity:0,x:40},{opacity:1,x:0,duration:.9,delay:.12,ease:'expo.out'});
-    $('#meet').style.pointerEvents='auto';$('#replay').hidden=false;
-    setTimeout(unlock,500);
+  const pans=$$('.pan');
+  function buildWalk(){
+    const W=innerWidth,tl=gsap.timeline({paused:true,onComplete:()=>{state='arrived';$('#meet').style.pointerEvents='auto';$('#replay').hidden=false;setTimeout(unlock,300)}});
+    tl.to('.hero-in,.hero-foot',{opacity:0,y:-40,duration:.5,ease:'power2.in'},0)
+      .to('#shade',{opacity:0,duration:.6},0)
+      .fromTo('#stepcap',{opacity:0,y:20},{opacity:1,y:0,duration:.5},.25).to('#stepcap',{opacity:0,y:-20,duration:.4},1.1)
+      // walk up to the glass doors and through them
+      .to('#front',{scale:2.7,duration:1.5,ease:'power2.in'},0)
+      .to('#front',{filter:'blur(4px) brightness(1.3)',duration:.4,ease:'power1.in'},1.1)
+      .to('#bloom',{opacity:1,duration:.4,ease:'power1.in'},1.1)
+      // inside: warm hall, sarees on display pass by on both sides
+      .set('#inside',{opacity:1},1.5).set('#pics',{opacity:0},1.5)
+      .to('#bloom',{opacity:0,duration:.6,ease:'power1.out'},1.5)
+      .to('#inside img',{scale:1.75,duration:2.1,ease:'none'},1.5);
+    pans.forEach((p,i)=>{const sd=+p.dataset.side,t=1.5+i*.27;
+      tl.fromTo(p,{xPercent:-50,yPercent:-50,x:sd*W*.1,scale:.38,opacity:0},{x:sd*W*.2,scale:.62,opacity:1,duration:.35,ease:'power1.out'},t)
+        .to(p,{x:sd*W*.78,scale:1.75,duration:.75,ease:'power2.in'},t+.35)
+        .to(p,{opacity:0,duration:.18},t+.82)});
+    // arrive at the stylist's table
+    tl.fromTo('#muse',{opacity:0},{opacity:1,duration:.55,ease:'power1.out'},2.95)
+      .fromTo('#muse img',{scale:1.32,filter:'blur(6px)'},{scale:1,filter:'blur(0px)',duration:1.15,ease:'power3.out'},2.95)
+      .to('#vign',{opacity:.55,duration:.6},3.2)
+      .fromTo('#meet .l',{opacity:0,x:-40},{opacity:1,x:0,duration:.7,ease:'expo.out'},3.55)
+      .fromTo('#meet .r',{opacity:0,x:40},{opacity:1,x:0,duration:.7,ease:'expo.out'},3.65);
+    return tl;
   }
-  function walkIn(){
-    if(state!=='idle')return;state='walking';lock();
-    gsap.to('.hero-in,.hero-foot',{opacity:0,y:-40,duration:.6,ease:'power2.in'});
-    gsap.to('#shade',{opacity:0,duration:.8});
-    gsap.fromTo('#stepcap',{opacity:0,y:20},{opacity:1,y:0,duration:.6,delay:.2});
-    gsap.to('#stepcap',{opacity:0,y:-20,duration:.5,delay:1.5});
-    const d=(isFinite(vid.duration)&&vid.duration)||10;
-    vid.playbackRate=Math.min(4,Math.max(1,d/WALK_SECONDS));
-    vid.currentTime=0;
-    const p=vid.play();
-    if(p&&p.catch)p.catch(()=>{try{vid.currentTime=Math.max(0,d-.05)}catch(e){};showMeet()});
-    // safety net in case "ended" never fires (slow network)
-    clearTimeout(walkIn._t);walkIn._t=setTimeout(()=>{if(state==='walking'){vid.pause();showMeet()}},WALK_SECONDS*1000+4000);
-  }
-  function skip(){ // a second scroll while walking jumps straight to her
-    if(state!=='walking')return;const d=(isFinite(vid.duration)&&vid.duration)||10;vid.pause();try{vid.currentTime=Math.max(0,d-.05)}catch(e){};showMeet();
-  }
-  vid.addEventListener('ended',()=>{if(state==='walking')showMeet()});
+  let walkTl=buildWalk();
+  function walkIn(){if(state!=='idle')return;state='walking';lock();walkTl.play(0)}
+  function skip(){if(state==='walking')walkTl.progress(1)}
   const atTop=()=>scrollY<10;
   addEventListener('wheel',e=>{if(e.deltaY>0&&atTop()&&state==='idle'){e.preventDefault();walkIn()}else if(state==='walking'){e.preventDefault();if(e.deltaY>40)skip()}},{passive:false});
   let ty=null;
   addEventListener('touchstart',e=>{ty=e.touches[0].clientY},{passive:true});
-  addEventListener('touchmove',e=>{if(ty===null)return;const dy=ty-e.touches[0].clientY;
-    if(state==='walking'){e.preventDefault();return}
+  addEventListener('touchmove',e=>{if(ty===null)return;const dy=ty-e.touches[0].clientY;if(state==='walking'){e.preventDefault();return}
     if(dy>12&&atTop()&&state==='idle'){e.preventDefault();ty=null;walkIn()}},{passive:false});
   addEventListener('keydown',e=>{if(['ArrowDown','PageDown',' ','Spacebar'].includes(e.key)&&atTop()&&state==='idle'&&!e.target.closest('input,textarea')){e.preventDefault();walkIn()}});
   $('.cue').addEventListener('click',e=>{e.preventDefault();walkIn()});
-  // walk again
-  $('#replay').addEventListener('click',()=>{gsap.set('#meet .l,#meet .r',{opacity:0});$('#meet').style.pointerEvents='none';$('#replay').hidden=true;
-    gsap.set('.hero-in,.hero-foot',{opacity:0});state='idle';scrollTo(0,0);walkIn()});
+  $('#replay').addEventListener('click',()=>{$('#meet').style.pointerEvents='none';$('#replay').hidden=true;scrollTo(0,0);walkTl.kill();
+    gsap.set('#pics,#front,#inside,#inside img,#muse,#muse img,#bloom,#vign,.pan,#meet .l,#meet .r,.hero-in,.hero-foot,#shade,#stepcap',{clearProps:'all'});
+    walkTl=buildWalk();state='idle';walkIn()});
+  let rw=innerWidth;addEventListener('resize',()=>{if(state!=='idle'||Math.abs(innerWidth-rw)<40)return;rw=innerWidth;walkTl.kill();walkTl=buildWalk()});
   addEventListener('load',()=>ScrollTrigger.refresh());
 }
 })();
