@@ -3,7 +3,7 @@
 Single-page saree boutique website.
 
 - `index.html` is fully self-contained: all styles, scripts and product photos are inside the file.
-- The banner is a one-scroll walk-through of the VASRÉ showroom (a single scroll plays the walk and stops at the stylist) (glass storefront → aisle of sarees → stylist at her table).
+- The banner opens with a saree-drape reveal: a red-and-gold paisley saree slides across the screen and is lifted away from the corner to reveal the banner. The same reveal plays each time the banner photo changes.
 
 ## Run it
 Open `index.html` in a browser, or serve the folder:
