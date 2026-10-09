@@ -130,19 +130,14 @@ a{color:inherit;text-decoration:none}
 
 
 /* ===== saree drape reveal (banner) ===== */
-.silk{position:absolute;inset:0;z-index:1;pointer-events:none;transform:translateX(105%);will-change:transform;
-  --r:0vmax;-webkit-mask-image:radial-gradient(circle at 100% 100%,transparent var(--r),#000 calc(var(--r) + 1.5vmax));mask-image:radial-gradient(circle at 100% 100%,transparent var(--r),#000 calc(var(--r) + 1.5vmax))}
+.silk{position:absolute;inset:0;z-index:1;pointer-events:none;visibility:hidden}
 .silk.top{z-index:6}
-.silk .cloth{position:absolute;inset:0;background-color:#9E1B26;background-image:
-  linear-gradient(90deg,rgba(0,0,0,.30),rgba(255,255,255,.07) 6%,rgba(0,0,0,.16) 13%,rgba(255,236,200,.10) 24%,rgba(0,0,0,.22) 36%,rgba(255,255,255,.06) 49%,rgba(0,0,0,.18) 61%,rgba(255,236,200,.09) 74%,rgba(0,0,0,.24) 88%,rgba(0,0,0,.08)),
-  var(--paisley);background-size:100% 100%,var(--tile,260px) var(--tile,260px);will-change:background-position}
-.silk .sheen{position:absolute;inset:0;background:linear-gradient(115deg,transparent 35%,rgba(255,228,170,.28) 47%,rgba(255,250,235,.38) 50%,rgba(255,228,170,.22) 53%,transparent 65%);background-size:250% 100%;background-position:120% 0;mix-blend-mode:screen}
-.silk .zari{position:absolute;top:0;bottom:0;left:-1px;width:clamp(46px,5.4vw,88px);clip-path:url(#scallop);
-  background:var(--border) 0 0/100% auto repeat-y,linear-gradient(90deg,#7E4E16,#E8C477 30%,#F7DE9A 50%,#C9963F 75%,#8A5A1C)}
-.silk .zari::after{content:"";position:absolute;top:0;bottom:0;right:0;width:22%;background:#9E1B26;box-shadow:inset 3px 0 0 #E8C477,inset 6px 0 0 #7E4E16}
-.silk .shadow{position:absolute;top:0;bottom:0;left:-80px;width:80px;background:linear-gradient(90deg,transparent,rgba(20,6,6,.45))}
-.silk .lip{position:absolute;left:100%;top:100%;width:calc(var(--r)*2);height:calc(var(--r)*2);transform:translate(-50%,-50%);border-radius:50%;
-  box-shadow:0 0 0 2px rgba(247,222,154,.85),0 0 0 9px rgba(158,27,38,.55),0 0 50px 18px rgba(20,6,6,.45);opacity:0}
+.silk .cloth,.silk .zari{position:absolute;inset:0;will-change:clip-path}
+.silk .cloth{background-color:#D2261A;background-image:
+  linear-gradient(90deg,rgba(80,0,0,.32),rgba(255,180,90,.10) 7%,rgba(90,0,0,.20) 15%,rgba(255,200,120,.12) 27%,rgba(90,0,0,.24) 39%,rgba(255,190,110,.08) 52%,rgba(90,0,0,.2) 64%,rgba(255,200,120,.12) 77%,rgba(80,0,0,.28) 90%),
+  var(--paisley);background-size:100% 100%,var(--tile,200px) var(--tile,200px)}
+.silk .zari{background:var(--border) 0 0/var(--bw,70px) auto repeat-y,linear-gradient(90deg,#8A4E0E,#F1C25A 30%,#FFE39A 50%,#D99A2E 75%,#8A4E0E);background-size:var(--bw,70px) auto,var(--bw,70px) 100%;background-repeat:repeat,repeat-x;}
+.silk .sheen{position:absolute;inset:0;background:linear-gradient(115deg,transparent 38%,rgba(255,226,160,.22) 48%,rgba(255,248,225,.32) 50%,rgba(255,226,160,.18) 52%,transparent 62%);background-size:260% 100%;background-position:130% 0;mix-blend-mode:screen;will-change:clip-path}
 .dim{position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(180deg,rgba(60,15,60,.55),rgba(40,8,30,.7));opacity:0}
 .intro .hero-in>*,.intro .hero-foot{animation-play-state:paused!important;opacity:0}
 .intro .hdr{opacity:0}
@@ -385,7 +380,7 @@ a{color:inherit;text-decoration:none}
   <div class="slide" style="--pos:22% 30%"><img data-img="sagecampaign" alt="Sage silk designer saree in a heritage palace garden"></div>
   <div class="slide" style="--pos:60% 50%"><img data-img="artisan" alt="Artisan hands weaving gold zari on a traditional Banarasi handloom"></div>
   <div class="dim" id="dim"></div>
-  <div class="silk" id="silk" aria-hidden="true"><div class="cloth"></div><div class="sheen"></div><div class="shadow"></div><div class="zari"></div><div class="lip"></div></div>
+  <div class="silk" id="silk" aria-hidden="true"><div class="cloth"></div><div class="sheen"></div><div class="zari"></div></div>
   <div class="hero-in">
     <div class="eyebrow">Heritage in every thread</div>
     <h1>Elegance Woven<br>Through <em>Generations.</em></h1>
@@ -598,33 +593,74 @@ const G=!!window.gsap&&!reduced;
 const slides=$$('.slide'),dots=$$('#dots button'),bar=$('#pbar');let si=0,timer,busy=false;
 const HOLD=7000;
 // paisley silk texture (vector, crisp at any size)
-(function(){const c='#E9B957',bg='#9E1B26',dk='#6E0E18';
+(function(){const c='#F6B73C',bg='#D2261A',dk='#A3120E';
  const boteh=(x,y,r,s)=>`<g transform="translate(${x} ${y}) rotate(${r}) scale(${s})"><path d="M22 58C8 57 2 45 5 34 8 22 20 18 27 13 33 9 34 3 30 1 38 2 44 10 44 21 44 38 36 58 22 58Z" fill="${c}"/><path d="M22 52C13 51 9 43 11 35 13 27 22 24 28 20 33 17 37 18 38 24 39 36 32 52 22 52Z" fill="${dk}"/><path d="M22 47C16 46 14 41 15 36 17 30 23 28 27 26 31 24 33 26 33 30 33 38 29 47 22 47Z" fill="${c}"/><circle cx="23" cy="37" r="4.2" fill="${dk}"/><circle cx="23" cy="37" r="1.8" fill="${c}"/><g fill="${c}"><circle cx="0" cy="42" r="1.6"/><circle cx="1" cy="31" r="1.6"/><circle cx="6" cy="21" r="1.6"/><circle cx="15" cy="13" r="1.6"/><circle cx="48" cy="30" r="1.6"/><circle cx="47" cy="42" r="1.6"/></g></g>`;
  const fl=(x,y,r)=>{let p='';for(let i=0;i<8;i++){const a=i*Math.PI/4;p+=`<ellipse cx="${(x+Math.cos(a)*r).toFixed(1)}" cy="${(y+Math.sin(a)*r).toFixed(1)}" rx="${(r*.55).toFixed(1)}" ry="${(r*.3).toFixed(1)}" transform="rotate(${i*45} ${(x+Math.cos(a)*r).toFixed(1)} ${(y+Math.sin(a)*r).toFixed(1)})" fill="${c}"/>`}return p+`<circle cx="${x}" cy="${y}" r="${r*.45}" fill="${dk}"/><circle cx="${x}" cy="${y}" r="${r*.22}" fill="${c}"/>`};
  const vine=`<path d="M0 130C40 110 70 150 110 128S180 100 220 126" stroke="${c}" stroke-width="1.6" fill="none" opacity=".75"/>`;
  const tile=`<svg xmlns="http://www.w3.org/2000/svg" width="220" height="220" viewBox="0 0 220 220"><rect width="220" height="220" fill="${bg}"/>${vine}${boteh(18,10,-12,1.25)}${boteh(205,212,168,1.25)}${boteh(120,150,20,.85)}${fl(160,52,13)}${fl(52,170,13)}${fl(108,96,6)}${fl(196,120,5)}${fl(20,92,5)}${fl(88,58,4)}${fl(170,200,4)}${fl(200,20,4)}${fl(60,212,3.5)}${boteh(150,140,-150,.45)}${boteh(70,70,40,.45)}<g fill="${c}" opacity=".8">${[[80,30],[140,20],[90,200],[30,140],[175,175],[150,95],[70,120]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="2"/>`).join('')}</g></svg>`;
- const border=`<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80"><path d="M0 0H80" stroke="#7E4E16" stroke-width="2"/>${boteh(28,8,0,.75).replace(new RegExp(c,'g'),'#9E1B26').replace(new RegExp(dk,'g'),'#F7DE9A')}<g fill="#7E4E16" opacity=".55"><circle cx="10" cy="40" r="2"/><circle cx="70" cy="40" r="2"/></g></svg>`;
+ const border=`<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80"><path d="M0 0H80" stroke="#8A4E0E" stroke-width="2"/><path d="M8 0V80M72 0V80" stroke="#8A4E0E" stroke-width="1.5" opacity=".6"/>${boteh(26,8,0,.72).replace(new RegExp(c,'g'),'#C21E14').replace(new RegExp(dk,'g'),'#FFE39A')}<g fill="#7E4E16" opacity=".55"><circle cx="10" cy="40" r="2"/><circle cx="70" cy="40" r="2"/></g></svg>`;
  const u=x=>`url("data:image/svg+xml,${encodeURIComponent(x)}")`;
  document.documentElement.style.setProperty('--paisley',u(tile));document.documentElement.style.setProperty('--border',u(border));
- document.documentElement.style.setProperty('--tile',Math.round(Math.max(150,innerWidth/8.5))+'px');})();
-const silk=$('#silk'),cloth=$('.cloth',silk),sheen=$('.sheen',silk),lip=$('.lip',silk);
-const R=()=>Math.hypot(innerWidth,innerHeight)/Math.max(innerWidth,innerHeight)*100+12; // vmax needed to clear the screen
+ document.documentElement.style.setProperty('--tile',Math.round(Math.max(140,innerWidth/7.5))+'px');})();
+const silk=$('#silk'),cloth=$('.cloth',silk),sheen=$('.sheen',silk),zari=$('.zari',silk);
+/* The cloth is clipped by a path rebuilt every frame:
+   - its left edge ripples like hanging fabric (ripples grow while it moves fast)
+   - a ragged hole grows from the bottom-right corner when it is pulled away */
+const D={edge:1.1,amp:.012,hole:0,phase:0,lift:0};
+function clothPath(W,H,bw,withHole,band){
+  const N=28,pts=[],ex=y=>D.edge*W+Math.sin(y/H*Math.PI*3.2+D.phase)*W*D.amp+Math.sin(y/H*Math.PI*7.1+D.phase*1.7)*W*D.amp*.35;
+  for(let i=0;i<=N;i++){const y=i/N*H;pts.push([ex(y),y])}
+  let d;
+  if(band){ // the zari border strip: between the edge and edge+bw
+    d='M'+pts.map(p=>p[0].toFixed(1)+' '+p[1].toFixed(1)).join(' L');
+    d+=' L'+pts.slice().reverse().map(p=>(p[0]+bw).toFixed(1)+' '+p[1].toFixed(1)).join(' L')+' Z';
+  }else{
+    d=`M${(pts[0][0]+(band?0:bw*.5)).toFixed(1)} -2 L${W+40} -2 L${W+40} ${H+2} L`+pts.slice().reverse().map(p=>(p[0]+bw*.5).toFixed(1)+' '+p[1].toFixed(1)).join(' L')+' Z';
+  }
+  if(withHole&&D.hole>0){ // ragged circle around the bottom-right corner
+    const R=D.hole*Math.hypot(W,H)*1.12,M=48;let h='';
+    for(let k=0;k<=M;k++){const t=k/M*Math.PI*2,r=R*(1+.07*Math.sin(t*5+D.phase*2)+.04*Math.sin(t*13+1.3)+.025*Math.sin(t*23+D.phase));
+      h+=(k?' L':' M')+(W+Math.cos(t)*r).toFixed(1)+' '+(H+Math.sin(t)*r).toFixed(1)}
+    d+=h+' Z';
+  }
+  return `path(${band?'nonzero':'evenodd'},"${d}")`;
+}
+function paint(){
+  const W=silk.clientWidth,H=silk.clientHeight,bw=Math.max(46,Math.min(92,W*.055));
+  silk.style.setProperty('--bw',bw+'px');
+  const body=clothPath(W,H,bw,true,false),band=clothPath(W,H,bw,false,true);
+  cloth.style.clipPath=body;sheen.style.clipPath=body;zari.style.clipPath=band;
+  zari.style.backgroundPosition=`${(D.edge*W).toFixed(1)}px ${(-D.lift*40).toFixed(1)}px,${(D.edge*W).toFixed(1)}px 0`;
+}
+let breeze=null;
+function sway(on){ // idle ripple while the saree hangs
+  if(breeze){breeze.kill();breeze=null}
+  if(on)breeze=gsap.to(D,{phase:'+=6.283',duration:3.2,ease:'none',repeat:-1,onUpdate:paint});
+}
+function drape({onCovered,onDone,intro=false}){
+  busy=true;silk.classList.toggle('top',intro);silk.style.visibility='visible';
+  Object.assign(D,{edge:intro?.8:1.12,amp:.012,hole:0,lift:0});paint();
+  gsap.set(cloth,{backgroundPosition:'0 0, 0 0'});gsap.set(sheen,{backgroundPosition:'130% 0'});
+  if(intro)sway(true);
+  const tl=gsap.timeline({onUpdate:paint,onComplete:()=>{busy=false;sway(false);silk.style.visibility='hidden';onDone&&onDone()}});
+  if(intro)tl.to({},{duration:1.1}); // the saree hangs at the edge of the dim showroom
+  tl.add(()=>sway(false))
+    // whoosh across: ripples swell while moving, then settle
+    .to(D,{edge:-.08,duration:intro?.75:.6,ease:'power3.inOut'})
+    .to(D,{amp:.045,phase:'+=5',duration:intro?.45:.36,ease:'power1.out'},'<')
+    .to(D,{amp:.01,duration:.35,ease:'power1.in'},'>-.05')
+    .add(()=>onCovered&&onCovered())
+    // hold on the silk: slow drift + a run of light across the zari
+    .to(cloth,{backgroundPosition:'0 0, -50px 22px',duration:intro?1.3:.9,ease:'none'},'<')
+    .to(sheen,{backgroundPosition:'-30% 0',duration:intro?1:.8,ease:'power1.inOut'},'<.1')
+    // pulled away from the corner with a ragged, moving edge
+    .to(D,{hole:1,phase:'+=3',lift:1,duration:intro?.8:.7,ease:'power2.in'},'+=.1');
+  return tl;
+}
+addEventListener('resize',()=>{if(busy)paint()});
 function setDots(){dots.forEach((d,i)=>d.setAttribute('aria-current',i===si));$('#cur').textContent='0'+(si+1)}
 function runBar(){bar.classList.remove('run');void bar.offsetWidth;if(!reduced)bar.classList.add('run')}
 function schedule(){clearTimeout(timer);if(!reduced)timer=setTimeout(()=>go(si+1),HOLD)}
-// the drape: slide in from the right, hold, lift away from the corner
-function drape({onCovered,onDone,intro=false}){
-  busy=true;silk.classList.toggle('top',intro);
-  gsap.set(silk,{xPercent:105,x:0,y:0,rotate:0,'--r':'0vmax'});gsap.set(lip,{opacity:0});gsap.set(sheen,{backgroundPosition:'120% 0'});
-  const tl=gsap.timeline({onComplete:()=>{busy=false;gsap.set(silk,{xPercent:105});onDone&&onDone()}});
-  tl.to(silk,{xPercent:0,duration:intro?1.15:.95,ease:'power3.inOut'})
-    .fromTo(cloth,{backgroundPosition:'0 0, 0 0'},{backgroundPosition:'0 0, -60px 20px',duration:intro?2.6:2.1,ease:'none'},0)
-    .add(()=>onCovered&&onCovered())
-    .to(sheen,{backgroundPosition:'-20% 0',duration:intro?.9:.7,ease:'power1.inOut'})
-    .set(lip,{opacity:1})
-    .to(silk,{'--r':R()+'vmax',x:-innerWidth*.05,y:-innerHeight*.05,rotate:-2,duration:intro?1.35:1.1,ease:'power2.inOut'},'+=.05');
-  return tl;
-}
 function go(n,instant){
   const next=(n+slides.length)%slides.length;
   if(!G||instant){slides[si].classList.remove('on');si=next;slides[si].classList.add('on');setDots();runBar();schedule();return}
@@ -640,7 +676,7 @@ if(G){
   document.body.classList.add('intro');setDots();
   gsap.set('#dim',{opacity:1});
   const tl=drape({intro:true,onCovered:()=>{gsap.set('#dim',{opacity:0})},onDone:()=>{runBar();schedule()}});
-  tl.add(()=>document.body.classList.remove('intro'),'-=1.0');
+  tl.add(()=>document.body.classList.remove('intro'),'-=.45');
 }else{go(0,true)}
 
 /* reveals */
