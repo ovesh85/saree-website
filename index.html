@@ -146,7 +146,7 @@ a{color:inherit;text-decoration:none}
 .meet::before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,rgba(20,12,8,.72),rgba(20,12,8,.1) 32%,rgba(20,12,8,0) 50%,rgba(20,12,8,.1) 68%,rgba(20,12,8,.72))}
 .meet{z-index:4}
 @media (max-width:760px){.wtag{display:none}.meet::before{background:none}}
-.stepcap{position:absolute;z-index:4;left:50%;top:13%;transform:translateX(-50%);text-align:center;color:#fff;opacity:0;pointer-events:none;width:90%}
+.stepcap{position:absolute;z-index:4;left:50%;top:24%;transform:translateX(-50%);text-align:center;color:#fff;opacity:0;pointer-events:none;width:90%}
 .stepcap .eyebrow{color:#F3E3CC}
 .stepcap h2{margin:12px 0 0;font:400 clamp(30px,3.6vw,52px)/1.05 var(--serif);text-shadow:0 2px 30px rgba(0,0,0,.4)}
 .stepcap h2 em{color:var(--gold)}
@@ -170,6 +170,8 @@ a{color:inherit;text-decoration:none}
   .meet .l{display:none}.meet .r{grid-column:1;justify-self:stretch;max-width:none;padding:22px;background:linear-gradient(0deg,rgba(25,15,10,.9),rgba(25,15,10,.55));text-align:left}
   .meet .r h2{font-size:34px;margin:0 0 10px}.meet .mt{display:block}
 }
+.replay{position:absolute;z-index:7;right:var(--pad);bottom:26px;display:flex;align-items:center;gap:10px;color:#fff;font-size:11px;letter-spacing:.2em;text-transform:uppercase;padding:10px 16px;border:1px solid rgba(255,255,255,.45);background:rgba(20,12,8,.25);backdrop-filter:blur(6px)}
+.replay[hidden]{display:none}
 .reduced .walk,.reduced .stepcap,.reduced .meet{display:none}
 
 /* ===== marquee ===== */
@@ -415,6 +417,7 @@ a{color:inherit;text-decoration:none}
       <div class="acts"><button class="btn btn-light" data-add="0">Add to bag <svg width="14" height="10" viewBox="0 0 14 10" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M0 5h13M9 1l4 4-4 4"/></svg></button><button class="link" data-q="0" style="color:#fff">Quick view</button></div></div>
   </div>
   <div class="fadeout" id="fadeout"></div>
+  <button class="replay" id="replay" hidden><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>Walk in again</button>
   <div class="hero-in">
     <div class="eyebrow">Heritage in every thread</div>
     <h1>Elegance Woven<br>Through <em>Generations.</em></h1>
@@ -425,7 +428,7 @@ a{color:inherit;text-decoration:none}
     </div>
   </div>
   <div class="hero-foot">
-    <a class="cue" href="#collections">Scroll to walk inside <svg width="12" height="14" viewBox="0 0 12 14" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M6 0v13M1 8l5 5 5-5"/></svg></a>
+    <a class="cue" href="#collections">Scroll to step inside <svg width="12" height="14" viewBox="0 0 12 14" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M6 0v13M1 8l5 5 5-5"/></svg></a>
     <span class="mid">The Heritage Edit · 2026</span>
     <span class="cue2">Showroom · T. Nagar, Chennai</span>
   </div>
@@ -684,26 +687,52 @@ if(G){
   if(window.Lenis){lenis=new Lenis({lerp:.085});lenis.on('scroll',ScrollTrigger.update);gsap.ticker.add(t=>lenis.raf(t*1000));gsap.ticker.lagSmoothing(0);document.documentElement.style.scrollBehavior='auto';
     $$('a[href^="#"]').forEach(a=>a.addEventListener('click',e=>{const t=$(a.getAttribute('href'));if(!t)return;e.preventDefault();lenis.scrollTo(t,{offset:-70,duration:1.6})}))}
 
-  /* Scroll drives the showroom walk-through video */
-  const vid=$('#vid');const V={t:0};let cur=0,dur=10;
-  const ready=()=>{if(vid.duration&&isFinite(vid.duration))dur=vid.duration};
-  vid.addEventListener('loadedmetadata',ready);ready();
-  // ease the playhead toward the scroll position so seeking feels like a camera glide
-  gsap.ticker.add(()=>{const target=V.t*dur;if(Math.abs(target-cur)<.004)return;cur+=(target-cur)*.18;
-    if(vid.readyState>=1&&!vid.seeking){try{vid.currentTime=Math.min(dur-.04,Math.max(0,cur))}catch(e){}}});
-  // unlock the video on iOS after the first touch
-  addEventListener('touchstart',()=>{vid.play().then(()=>vid.pause()).catch(()=>{})},{once:true,passive:true});
-  const tl=gsap.timeline({defaults:{ease:'none'},scrollTrigger:{trigger:'#top',start:'top top',end:'+=520%',pin:true,scrub:true,anticipatePin:1,invalidateOnRefresh:true,
-    onRefresh:s=>{heroEnd=s.end},onUpdate:s=>{$('#meet').style.pointerEvents=s.progress>.84&&s.progress<.95?'auto':'none'}}});
-  tl.to('.hero-in,.hero-foot',{opacity:0,y:-50,duration:.06},0)
-    .to('#shade',{opacity:0,duration:.08},0)
-    .fromTo('#stepcap',{opacity:0,y:30},{opacity:1,y:0,duration:.04},.05).to('#stepcap',{opacity:0,y:-30,duration:.04},.15)
-    .to(V,{t:1,duration:.82,ease:'none'},.04)
-    .to('#vign',{opacity:.55,duration:.1},.7)
-    .fromTo('#meet .l',{opacity:0,x:-40},{opacity:1,x:0,duration:.04},.84)
-    .fromTo('#meet .r',{opacity:0,x:40},{opacity:1,x:0,duration:.04},.86)
-    .to('#meet .l,#meet .r',{opacity:0,y:-30,duration:.03},.95)
-    .to('#fadeout',{opacity:1,duration:.04},.96);
+  /* One scroll = walk into the showroom and meet the stylist */
+  const vid=$('#vid'),hero=$('#top');
+  const WALK_SECONDS=4.2;            // how long the walk takes on screen
+  let state='idle';                  // idle -> walking -> arrived
+  heroEnd=hero.offsetHeight;
+  addEventListener('resize',()=>{heroEnd=hero.offsetHeight});
+  const lock=()=>{lenis&&lenis.stop();document.documentElement.style.overflow='hidden'};
+  const unlock=()=>{lenis&&lenis.start();document.documentElement.style.overflow=''};
+  function showMeet(){
+    state='arrived';
+    gsap.to('#vign',{opacity:.55,duration:.8});
+    gsap.fromTo('#meet .l',{opacity:0,x:-40},{opacity:1,x:0,duration:.9,ease:'expo.out'});
+    gsap.fromTo('#meet .r',{opacity:0,x:40},{opacity:1,x:0,duration:.9,delay:.12,ease:'expo.out'});
+    $('#meet').style.pointerEvents='auto';$('#replay').hidden=false;
+    setTimeout(unlock,500);
+  }
+  function walkIn(){
+    if(state!=='idle')return;state='walking';lock();
+    gsap.to('.hero-in,.hero-foot',{opacity:0,y:-40,duration:.6,ease:'power2.in'});
+    gsap.to('#shade',{opacity:0,duration:.8});
+    gsap.fromTo('#stepcap',{opacity:0,y:20},{opacity:1,y:0,duration:.6,delay:.2});
+    gsap.to('#stepcap',{opacity:0,y:-20,duration:.5,delay:1.5});
+    const d=(isFinite(vid.duration)&&vid.duration)||10;
+    vid.playbackRate=Math.min(4,Math.max(1,d/WALK_SECONDS));
+    vid.currentTime=0;
+    const p=vid.play();
+    if(p&&p.catch)p.catch(()=>{try{vid.currentTime=Math.max(0,d-.05)}catch(e){};showMeet()});
+    // safety net in case "ended" never fires (slow network)
+    clearTimeout(walkIn._t);walkIn._t=setTimeout(()=>{if(state==='walking'){vid.pause();showMeet()}},WALK_SECONDS*1000+4000);
+  }
+  function skip(){ // a second scroll while walking jumps straight to her
+    if(state!=='walking')return;const d=(isFinite(vid.duration)&&vid.duration)||10;vid.pause();try{vid.currentTime=Math.max(0,d-.05)}catch(e){};showMeet();
+  }
+  vid.addEventListener('ended',()=>{if(state==='walking')showMeet()});
+  const atTop=()=>scrollY<10;
+  addEventListener('wheel',e=>{if(e.deltaY>0&&atTop()&&state==='idle'){e.preventDefault();walkIn()}else if(state==='walking'){e.preventDefault();if(e.deltaY>40)skip()}},{passive:false});
+  let ty=null;
+  addEventListener('touchstart',e=>{ty=e.touches[0].clientY},{passive:true});
+  addEventListener('touchmove',e=>{if(ty===null)return;const dy=ty-e.touches[0].clientY;
+    if(state==='walking'){e.preventDefault();return}
+    if(dy>12&&atTop()&&state==='idle'){e.preventDefault();ty=null;walkIn()}},{passive:false});
+  addEventListener('keydown',e=>{if(['ArrowDown','PageDown',' ','Spacebar'].includes(e.key)&&atTop()&&state==='idle'&&!e.target.closest('input,textarea')){e.preventDefault();walkIn()}});
+  $('.cue').addEventListener('click',e=>{e.preventDefault();walkIn()});
+  // walk again
+  $('#replay').addEventListener('click',()=>{gsap.set('#meet .l,#meet .r',{opacity:0});$('#meet').style.pointerEvents='none';$('#replay').hidden=true;
+    gsap.set('.hero-in,.hero-foot',{opacity:0});state='idle';scrollTo(0,0);walkIn()});
   addEventListener('load',()=>ScrollTrigger.refresh());
 }
 })();
